@@ -44,7 +44,8 @@ func (a *App) Run() {
 }
 
 func (a *App) initHTTP() {
-
+	handler := New(a.service)
+	a.mux = handler.Router()
 }
 
 func (a *App) runHTTP() {

@@ -40,12 +40,12 @@ func MustLoad() *HTTPServer {
 		AppPort:        getEnv("APP_PORT"),
 		AppBindAddress: getEnv("APP_BIND_ADDRESS"),
 		PGConfig: &PGConfig{
-			Username: getEnv("USERNAME"),
-			Password: getEnv("PASSWORD"),
-			Host:     getEnv("HOST"),
-			DBName:   getEnv("NAME"),
-			Port:     getEnv("PORT"),
-			Mode:     getEnv("MODE"),
+			Username: getEnv("DB_USERNAME"),
+			Password: getEnv("DB_PASSWORD"),
+			Host:     getEnv("DB_HOST"),
+			DBName:   getEnv("DB_NAME"),
+			Port:     getEnv("DB_PORT"),
+			Mode:     getEnv("DB_MODE"),
 		},
 	}
 }

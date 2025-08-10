@@ -1,0 +1,44 @@
+-- +goose Up
+-- +goose StatementBegin
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  nickname VARCHAR UNIQUE,
+  fullname VARCHAR,
+  about VARCHAR,
+  email VARCHAR UNIQUE,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE forums (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR,
+  "user" VARCHAR NOT NULL REFERENCES users(nickname) ON DELETE CASCADE,
+  slug VARCHAR UNIQUE,
+  posts INTEGER DEFAULT 0,
+  threads INTEGER DEFAULT 0,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE threads (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR UNIQUE,
+  author VARCHAR NOT NULL REFERENCES users(nickname) ON DELETE CASCADE,
+  forum VARCHAR NOT NULL REFERENCES forums(slug) ON DELETE CASCADE,
+  "message" VARCHAR,
+  votes INTEGER,
+  slug VARCHAR UNIQUE
+); 
+
+CREATE TABLE posts (
+  id SERIAL PRIMARY KEY,
+  parent INTEGER,
+  author VARCHAR NOT NULL REFERENCES users(nickname) ON DELETE CASCADE,
+  "message" TEXT,
+  is_edited BOOL,
+  forum VARCHAR NOT NULL REFERENCES forums(slug) ON DELETE CASCADE,
+  thread INTEGER NOT NULL REFERENCES threads(id) ON DELETE CASCADE,
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- +goose StatementEnd

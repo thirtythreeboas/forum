@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '5433:5432'
+    volumes:
+      - "${PWD}/db/migrations/db.sql:/docker-entrypoint-initdb.d/db.sql"

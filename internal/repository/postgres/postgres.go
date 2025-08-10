@@ -19,7 +19,7 @@ func MustNew(ctx context.Context, cfg *config.PGConfig) *pgxpool.Pool {
 
 	dbPool, err := pgxpool.New(ctx, conn)
 	if err != nil {
-		log.Fatal("Failed to connect to db")
+		log.Fatal("Failed to connect to db", err)
 	}
 
 	return dbPool
