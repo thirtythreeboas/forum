@@ -44,7 +44,6 @@ func (r *repository) GetProfile(ctx context.Context, nickname string) (*model.Us
 		FROM users
 		WHERE nickname = $1
 	`
-
 	var existingUser model.User
 
 	err := r.db.QueryRow(ctx, query, nickname).Scan(
