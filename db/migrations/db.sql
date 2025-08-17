@@ -1,6 +1,3 @@
--- +goose Up
--- +goose StatementBegin
-
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   nickname VARCHAR UNIQUE,
@@ -28,6 +25,7 @@ CREATE TABLE threads (
   "message" VARCHAR,
   votes INTEGER,
   slug VARCHAR UNIQUE
+  created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ); 
 
 CREATE TABLE posts (
@@ -41,4 +39,38 @@ CREATE TABLE posts (
   created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- +goose StatementEnd
+CREATE OR REPLACE FUNCTION update_forum_threads_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        UPDATE forums SET threads = threads + 1 WHERE slug = NEW.forum;
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        UPDATE forums SET threads = threads - 1 WHERE slug = OLD.forum;
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER forum_threads_count_trigger
+AFTER INSERT OR DELETE ON threads
+FOR EACH ROW
+EXECUTE FUNCTION update_forum_threads_count();
+
+CREATE OR REPLACE FUNCTION update_forum_posts_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        UPDATE forums SET posts = posts + 1 WHERE slug = NEW.forum;
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        UPDATE forums SET posts = posts - 1 WHERE slug = OLD.forum;
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER forum_posts_count_trigger
+AFTER INSERT OR DELETE ON posts
+FOR EACH ROW
+EXECUTE FUNCTION update_forum_posts_count();
